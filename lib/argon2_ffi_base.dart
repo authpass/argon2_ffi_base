@@ -35,7 +35,7 @@ typedef Argon2Hash = Pointer<Utf8> Function(
   int version,
 );
 
-class Argon2Ffi {
+class Argon2FfiFlutter extends Argon2Base {
   int Function(int x, int y) _nativeAdd;
   Argon2Hash argon2hash;
 
