@@ -9,6 +9,8 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:ffi_helper/ffi_helper.dart';
 
+// ignore_for_file: non_constant_identifier_names,
+
 typedef Argon2HashNative = Pointer<Utf8> Function(
   Pointer<Uint8> key,
   Uint32 keyLen,
@@ -36,10 +38,7 @@ typedef Argon2Hash = Pointer<Utf8> Function(
 );
 
 class Argon2FfiFlutter extends Argon2Base {
-  int Function(int x, int y) _nativeAdd;
-  Argon2Hash argon2hash;
-
-  Argon2Ffi() {
+  Argon2FfiFlutter() {
     final argon2lib = Platform.isAndroid
         ? DynamicLibrary.open('libargon2_ffi.so')
         : Platform.isLinux
@@ -48,7 +47,14 @@ class Argon2FfiFlutter extends Argon2Base {
     _nativeAdd = argon2lib
         .lookup<NativeFunction<Int32 Function(Int32, Int32)>>('native_add')
         .asFunction();
+    argon2hash = argon2lib
+        .lookup<NativeFunction<Argon2HashNative>>('hp_argon2_hash')
+        .asFunction();
   }
+
+  int Function(int x, int y) _nativeAdd;
+  @override
+  Argon2Hash argon2hash;
 
   int addIt(int x, int y) => _nativeAdd(x, y);
 }
