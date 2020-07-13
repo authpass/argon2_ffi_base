@@ -43,7 +43,9 @@ class Argon2FfiFlutter extends Argon2Base {
         ? DynamicLibrary.open('libargon2_ffi.so')
         : Platform.isLinux
             ? DynamicLibrary.open('libargon2_ffi_plugin.so')
-            : DynamicLibrary.executable();
+            : Platform.isWindows
+                ? DynamicLibrary.open('argon2_ffi_plugin.dll')
+                : DynamicLibrary.executable();
     _nativeAdd = argon2lib
         .lookup<NativeFunction<Int32 Function(Int32, Int32)>>('native_add')
         .asFunction();
