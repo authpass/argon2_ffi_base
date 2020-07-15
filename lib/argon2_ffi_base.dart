@@ -2,12 +2,10 @@ library argon2_ffi_base;
 
 import 'dart:convert';
 import 'dart:ffi';
-
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
-import 'package:ffi_helper/ffi_helper.dart';
 
 // ignore_for_file: non_constant_identifier_names,
 
@@ -87,8 +85,8 @@ abstract class Argon2Base extends Argon2 {
 
   @override
   Uint8List argon2(Argon2Arguments args) {
-    final keyArray = Uint8Array.fromTypedList(args.key);
-    final saltArray = Uint8Array.fromTypedList(args.salt);
+    final keyPtr = Uint8ArrayUtils.toPointer(args.key);
+    final saltPtr = Uint8ArrayUtils.toPointer(args.salt);
 //    final saltArray = allocate<Uint8>(count: args.salt.length);
 //    final saltList = saltArray.asTypedList(args.length);
 //    saltList.setAll(0, args.salt);
@@ -97,10 +95,10 @@ abstract class Argon2Base extends Argon2 {
 //    _logger.fine('saltArray: ${ByteUtils.toHexList(saltArray.view)}');
 
     final result = argon2hash(
-      keyArray.rawPtr,
-      keyArray.length,
-      saltArray.rawPtr,
-      saltArray.length,
+      keyPtr,
+      args.key.length,
+      saltPtr,
+      args.salt.length,
       args.memory,
       args.iterations,
       args.parallelism,
@@ -109,8 +107,8 @@ abstract class Argon2Base extends Argon2 {
       args.version,
     );
 
-    keyArray.free();
-    saltArray.free();
+    free(keyPtr);
+    free(saltPtr);
 //    free(saltArray);
     final resultString = Utf8.fromUtf8(result);
     return base64.decode(resultString);
@@ -119,5 +117,22 @@ abstract class Argon2Base extends Argon2 {
   @override
   Future<Uint8List> argon2Async(Argon2Arguments args) async {
     return argon2(args);
+  }
+}
+
+// from https://github.com/hanabi1224/flutter_native_extensions/blob/master/src/compression/dart_native_compression/lib/utils/uint8_list_utils.dart
+class Uint8ArrayUtils {
+  static Uint8List fromPointer(Pointer<Uint8> ptr, int length) {
+    final view = ptr.asTypedList(length);
+    final builder = BytesBuilder(copy: false);
+    builder.add(view);
+    return builder.takeBytes();
+  }
+
+  static Pointer<Uint8> toPointer(Uint8List bytes) {
+    final ptr = allocate<Uint8>(count: bytes.length);
+    final byteList = ptr.asTypedList(bytes.length);
+    byteList.setAll(0, bytes);
+    return ptr.cast();
   }
 }

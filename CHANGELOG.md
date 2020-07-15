@@ -1,3 +1,7 @@
+## [0.1.2]
+
+* Remove dependency on ffi_helper.
+
 ## [0.1.1]
 
 * On windows load plugin dll
