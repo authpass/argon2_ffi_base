@@ -1,3 +1,7 @@
+## [0.1.3+1]
+
+* Allow overwriting of library name lookup.
+
 ## [0.1.2]
 
 * Remove dependency on ffi_helper.

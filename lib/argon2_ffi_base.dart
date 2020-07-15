@@ -9,6 +9,10 @@ import 'package:ffi/ffi.dart';
 
 // ignore_for_file: non_constant_identifier_names,
 
+import 'package:logging/logging.dart';
+
+final _logger = Logger('argon2_ffi_base');
+
 typedef Argon2HashNative = Pointer<Utf8> Function(
   Pointer<Uint8> key,
   Uint32 keyLen,
@@ -35,15 +39,11 @@ typedef Argon2Hash = Pointer<Utf8> Function(
   int version,
 );
 
+typedef ResolveLibrary = String Function(String baseName);
+
 class Argon2FfiFlutter extends Argon2Base {
-  Argon2FfiFlutter() {
-    final argon2lib = Platform.isAndroid
-        ? DynamicLibrary.open('libargon2_ffi.so')
-        : Platform.isLinux
-            ? DynamicLibrary.open('libargon2_ffi_plugin.so')
-            : Platform.isWindows
-                ? DynamicLibrary.open('argon2_ffi_plugin.dll')
-                : DynamicLibrary.executable();
+  Argon2FfiFlutter({this.resolveLibrary}) {
+    final argon2lib = _loadLib();
     _nativeAdd = argon2lib
         .lookup<NativeFunction<Int32 Function(Int32, Int32)>>('native_add')
         .asFunction();
@@ -52,11 +52,48 @@ class Argon2FfiFlutter extends Argon2Base {
         .asFunction();
   }
 
+  static ResolveLibrary defaultResolveLibrary = (name) => name;
+
+  /// forces loading of dynamic library on MacOS instead of assuming
+  /// argon2 was statically linked. (ie. flutter usage, vs dart usage)
+  static bool resolveLibraryForceDynamic = false;
+
+  final ResolveLibrary resolveLibrary;
+
   int Function(int x, int y) _nativeAdd;
   @override
   Argon2Hash argon2hash;
 
   int addIt(int x, int y) => _nativeAdd(x, y);
+
+  DynamicLibrary _loadLib() {
+    final resolveLibrary = this.resolveLibrary ?? defaultResolveLibrary;
+
+    if (!resolveLibraryForceDynamic && (Platform.isIOS || Platform.isMacOS)) {
+      return DynamicLibrary.executable();
+    }
+    final libraryNames = [
+      [Platform.isAndroid, 'libargon2_ffi.so'],
+      [Platform.isLinux, './libargon2_ffi_plugin.so'],
+      [Platform.isWindows, 'argon2_ffi_plugin.dll'],
+      [Platform.isMacOS, 'libargon2_ffi.dylib'],
+      [Platform.isIOS, null], // only supports static linking.
+    ];
+    final libraryName = libraryNames.firstWhere((element) => element[0] == true,
+            orElse: () => throw StateError(
+                'Unsupported Operating System ${Platform.operatingSystem}'))[1]
+        as String;
+    final path = resolveLibrary(libraryName);
+    try {
+      return DynamicLibrary.open(libraryName);
+    } on ArgumentError catch (e, stackTrace) {
+      _logger.severe(
+          'Error while loading dynamic library from $path ($libraryName)',
+          e,
+          stackTrace);
+      rethrow;
+    }
+  }
 }
 
 abstract class Argon2 {
