@@ -1,6 +1,6 @@
 name: argon2_ffi_base
 description: Base package defining the interface for an Argon2 implementation.
-version: 0.1.4
+version: 0.1.4+1
 homepage: https://github.com/authpass/argon2_ffi_base
 
 environment:

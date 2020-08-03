@@ -1,6 +1,10 @@
 import 'dart:typed_data';
 
 abstract class Argon2 {
+  /// forces loading of dynamic library on MacOS instead of assuming
+  /// argon2 was statically linked. (ie. flutter usage, vs dart usage)
+  static bool resolveLibraryForceDynamic = false;
+
   Uint8List argon2(Argon2Arguments args);
 
   Future<Uint8List> argon2Async(Argon2Arguments args);

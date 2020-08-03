@@ -94,10 +94,6 @@ class Argon2FfiFlutter extends Argon2Base {
 
   static ResolveLibrary defaultResolveLibrary = (name) => name;
 
-  /// forces loading of dynamic library on MacOS instead of assuming
-  /// argon2 was statically linked. (ie. flutter usage, vs dart usage)
-  static bool resolveLibraryForceDynamic = false;
-
   final ResolveLibrary resolveLibrary;
 
   int Function(int x, int y) _nativeAdd;
@@ -109,7 +105,8 @@ class Argon2FfiFlutter extends Argon2Base {
   DynamicLibrary _loadLib() {
     final resolveLibrary = this.resolveLibrary ?? defaultResolveLibrary;
 
-    if (!resolveLibraryForceDynamic && (Platform.isIOS || Platform.isMacOS)) {
+    if (!Argon2.resolveLibraryForceDynamic &&
+        (Platform.isIOS || Platform.isMacOS)) {
       return DynamicLibrary.executable();
     }
     final libraryNames = [
