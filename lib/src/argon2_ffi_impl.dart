@@ -38,8 +38,6 @@ typedef Argon2Hash = Pointer<Utf8> Function(
   int version,
 );
 
-typedef ResolveLibrary = String Function(String baseName);
-
 abstract class Argon2Base extends Argon2 {
 //  @protected
   Argon2Hash get argon2hash;

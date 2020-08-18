@@ -1,4 +1,4 @@
-## 0.1.4+1
+## 0.1.4+2
 
 * separate implementation to allow dart:html compilation.
 

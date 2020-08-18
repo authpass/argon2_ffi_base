@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+typedef ResolveLibrary = String Function(String baseName);
+
 abstract class Argon2 {
   /// forces loading of dynamic library on MacOS instead of assuming
   /// argon2 was statically linked. (ie. flutter usage, vs dart usage)
