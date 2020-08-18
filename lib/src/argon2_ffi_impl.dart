@@ -126,6 +126,15 @@ class Argon2FfiFlutter extends Argon2Base {
           'Error while loading dynamic library from $path ($libraryName)',
           e,
           stackTrace);
+      if (e.message.toString().contains('hardened programs')) {
+        final message = 'Unable to load argon2 library. On MacOS you have to '
+            'remove hardening from dart binary:\n\n'
+            'codesign --remove-signature ${Platform.resolvedExecutable}\n\n'
+            'https://github.com/dart-lang/sdk/issues/39231#issuecomment-579743656';
+        _logger.shout(message);
+        throw ArgumentError('${e.message}\n\n$message');
+      }
+
       rethrow;
     }
   }

@@ -1,3 +1,7 @@
+## 0.1.4+3
+
+* Better error message for mac os when unable to load dylib.
+
 ## 0.1.4+2
 
 * separate implementation to allow dart:html compilation.
