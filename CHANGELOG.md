@@ -1,6 +1,6 @@
-## 0.1.4+5
+## 0.1.4+6
 
-* Linux: Also search lib/ sub directory for libargon so file.
+* Linux: Also search lib/ sub directory for libargon.so file.
 
 ## 0.1.4+3
 

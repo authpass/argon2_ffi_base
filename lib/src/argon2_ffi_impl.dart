@@ -96,20 +96,25 @@ class Argon2FfiFlutter extends Argon2Base {
       // on linux the library is put into a `lib` sub directory.
       _logger.finest(
           'Resolving path to $name relative to ${Platform.resolvedExecutable}');
-      final appDir = File(Platform.resolvedExecutable).parent;
+      final appDir = File(Platform.resolvedExecutable).parent.absolute;
       final appDirPath = appDir.path;
-      final f = File(path.join(appDirPath, name));
-      _logger.finest('checking $appDirPath for $name');
-      if (!f.existsSync()) {
-        _logger.finest('$name not found in current path, looking into $name');
-        final f = File(path.join(appDirPath, 'lib', name));
+      {
+        final f = File(path.join(appDirPath, name));
+        _logger.finest('checking $appDirPath for $name');
         if (f.existsSync()) {
-          final ret = f.absolute.path;
-          _logger.finer('Loading from $ret');
-          return ret;
-        } else {
-          _logger.severe('Unable to find $name in $appDirPath or ${f.path}');
+          // library available in the same path as the executable.
+          return name;
         }
+      }
+      _logger.finest('$name not found in current path, looking into lib/$name');
+      final libSo = File(path.join(appDirPath, 'lib', name));
+      if (libSo.existsSync()) {
+        final ret = libSo.absolute.path;
+        // final relative = '${path.relative(ret, from: cwd.path)}';
+        _logger.finer('Loading from ($ret)');
+        return ret;
+      } else {
+        _logger.severe('Unable to find $name at ${libSo.path}');
       }
     }
     return name;
@@ -141,9 +146,11 @@ class Argon2FfiFlutter extends Argon2Base {
             orElse: () => throw StateError(
                 'Unsupported Operating System ${Platform.operatingSystem}'))[1]
         as String;
+    _logger.finest('resolving $libraryName');
     final path = resolveLibrary(libraryName);
+    _logger.finest('DynamicLibrary.open($path)');
     try {
-      return DynamicLibrary.open(libraryName);
+      return DynamicLibrary.open(path);
     } on ArgumentError catch (e, stackTrace) {
       _logger.severe(
           'Error while loading dynamic library from $path ($libraryName)',
