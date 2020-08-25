@@ -94,7 +94,9 @@ class Argon2FfiFlutter extends Argon2Base {
   static ResolveLibrary defaultResolveLibrary = (name) {
     if (Platform.isLinux) {
       // on linux the library is put into a `lib` sub directory.
-      final appDir = File(Platform.executable).parent;
+      _logger.finest(
+          'Resolving path to $name relative to ${Platform.resolvedExecutable}');
+      final appDir = File(Platform.resolvedExecutable).parent;
       final appDirPath = appDir.path;
       final f = File(path.join(appDirPath, name));
       _logger.finest('checking $appDirPath for $name');

@@ -1,4 +1,4 @@
-## 0.1.4+4
+## 0.1.4+5
 
 * Linux: Also search lib/ sub directory for libargon so file.
 
