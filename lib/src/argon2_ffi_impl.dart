@@ -7,6 +7,7 @@ import 'package:argon2_ffi_base/src/argon2_ffi_base.dart';
 import 'package:argon2_ffi_base/src/utils.dart';
 import 'package:ffi/ffi.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
 
 final _logger = Logger('argon2_ffi_base');
 
@@ -90,7 +91,27 @@ class Argon2FfiFlutter extends Argon2Base {
         .asFunction();
   }
 
-  static ResolveLibrary defaultResolveLibrary = (name) => name;
+  static ResolveLibrary defaultResolveLibrary = (name) {
+    if (Platform.isLinux) {
+      // on linux the library is put into a `lib` sub directory.
+      final appDir = File(Platform.executable).parent;
+      final appDirPath = appDir.path;
+      final f = File(path.join(appDirPath, name));
+      _logger.finest('checking $appDirPath for $name');
+      if (!f.existsSync()) {
+        _logger.finest('$name not found in current path, looking into $name');
+        final f = File(path.join(appDirPath, 'lib', name));
+        if (f.existsSync()) {
+          final ret = f.absolute.path;
+          _logger.finer('Loading from $ret');
+          return ret;
+        } else {
+          _logger.severe('Unable to find $name in $appDirPath or ${f.path}');
+        }
+      }
+    }
+    return name;
+  };
 
   final ResolveLibrary resolveLibrary;
 

@@ -1,3 +1,7 @@
+## 0.1.4+4
+
+* Linux: Also search lib/ sub directory for libargon so file.
+
 ## 0.1.4+3
 
 * Better error message for mac os when unable to load dylib.
