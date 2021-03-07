@@ -67,10 +67,10 @@ abstract class Argon2Base extends Argon2 {
       args.version,
     );
 
-    free(keyPtr);
-    free(saltPtr);
+    calloc.free(keyPtr);
+    calloc.free(saltPtr);
 //    free(saltArray);
-    final resultString = Utf8.fromUtf8(result);
+    final resultString = result.toDartString();
     return base64.decode(resultString);
   }
 
