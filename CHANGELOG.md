@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Nullsafety migration
+
 ## 0.1.4+6
 
 * Linux: Also search lib/ sub directory for libargon.so file.

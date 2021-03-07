@@ -120,16 +120,17 @@ class Argon2FfiFlutter extends Argon2Base {
     return name;
   };
 
-  final ResolveLibrary resolveLibrary;
+  final ResolveLibrary? resolveLibrary;
 
-  int Function(int x, int y) _nativeAdd;
+  late int Function(int x, int y) _nativeAdd;
   @override
-  Argon2Hash argon2hash;
+  late Argon2Hash argon2hash;
 
   int addIt(int x, int y) => _nativeAdd(x, y);
 
   DynamicLibrary _loadLib() {
-    final resolveLibrary = this.resolveLibrary ?? defaultResolveLibrary;
+    final resolveLibrary = this.resolveLibrary as String Function(String?)? ??
+        defaultResolveLibrary as String Function(String?);
 
     if (!Argon2.resolveLibraryForceDynamic &&
         (Platform.isIOS || Platform.isMacOS)) {
@@ -143,9 +144,9 @@ class Argon2FfiFlutter extends Argon2Base {
       [Platform.isIOS, null], // only supports static linking.
     ];
     final libraryName = libraryNames.firstWhere((element) => element[0] == true,
-            orElse: () => throw StateError(
-                'Unsupported Operating System ${Platform.operatingSystem}'))[1]
-        as String;
+            orElse: (() => throw StateError(
+                'Unsupported Operating System ${Platform.operatingSystem}')))[1]
+        as String?;
     _logger.finest('resolving $libraryName');
     final path = resolveLibrary(libraryName);
     _logger.finest('DynamicLibrary.open($path)');
