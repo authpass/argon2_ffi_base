@@ -129,8 +129,7 @@ class Argon2FfiFlutter extends Argon2Base {
   int addIt(int x, int y) => _nativeAdd(x, y);
 
   DynamicLibrary _loadLib() {
-    final resolveLibrary = this.resolveLibrary as String Function(String?)? ??
-        defaultResolveLibrary as String Function(String?);
+    final resolveLibrary = this.resolveLibrary ?? defaultResolveLibrary;
 
     if (!Argon2.resolveLibraryForceDynamic &&
         (Platform.isIOS || Platform.isMacOS)) {
@@ -148,6 +147,9 @@ class Argon2FfiFlutter extends Argon2Base {
                 'Unsupported Operating System ${Platform.operatingSystem}')))[1]
         as String?;
     _logger.finest('resolving $libraryName');
+    if (libraryName == null) {
+      return DynamicLibrary.executable();
+    }
     final path = resolveLibrary(libraryName);
     _logger.finest('DynamicLibrary.open($path)');
     try {
