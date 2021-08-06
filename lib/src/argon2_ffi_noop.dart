@@ -6,7 +6,12 @@ import 'package:argon2_ffi_base/src/argon2_ffi_base.dart';
 /// from `argon2_ffi_impl.dart` is used.
 class Argon2FfiFlutter extends Argon2 {
   // ignore: avoid_unused_constructor_parameters
-  Argon2FfiFlutter({ResolveLibrary? resolveLibrary});
+  const Argon2FfiFlutter({ResolveLibrary? resolveLibrary});
+
+  @override
+  bool get isFfi => false;
+  @override
+  bool get isImplemented => false;
 
   @override
   Uint8List argon2(Argon2Arguments args) {

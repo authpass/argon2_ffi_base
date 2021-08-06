@@ -40,8 +40,15 @@ typedef Argon2Hash = Pointer<Utf8> Function(
 );
 
 abstract class Argon2Base extends Argon2 {
+  const Argon2Base();
+
 //  @protected
   Argon2Hash get argon2hash;
+
+  @override
+  bool get isFfi => true;
+  @override
+  bool get isImplemented => true;
 
   @override
   Uint8List argon2(Argon2Arguments args) {

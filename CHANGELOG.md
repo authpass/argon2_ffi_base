@@ -1,3 +1,8 @@
+## 1.1.0
+
+* Some helper methods to distinguish ffi implementations from dart only 
+  implementations,etc.
+
 ## 1.0.0
 
 * Nullsafety migration
