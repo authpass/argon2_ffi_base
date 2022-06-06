@@ -1,3 +1,7 @@
+## 1.1.1
+
+* Upgrade dependencies.
+
 ## 1.1.0+1
 
 * Some helper methods to distinguish ffi implementations from dart only 

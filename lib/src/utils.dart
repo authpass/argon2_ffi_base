@@ -1,6 +1,5 @@
 // from https://github.com/hanabi1224/flutter_native_extensions/blob/master/src/compression/dart_native_compression/lib/utils/uint8_list_utils.dart
 import 'dart:ffi';
-import 'dart:io';
 
 import 'dart:typed_data';
 
